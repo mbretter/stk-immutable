@@ -1,13 +1,22 @@
 <?php
 
-namespace Stk\Immutable\Additions;
+namespace Stk\Immutable\Serialize;
 
 use stdClass;
 
 trait ToArray
 {
-    protected function dataToArray($data)
+    /**
+     * @param $data
+     *
+     * @return array|stdClass
+     */
+    private function _dataToArray($data)
     {
+        if ($data === null) {
+            return [];
+        }
+
         if (is_object($data) && $data instanceof stdClass) {
             $ovs = get_object_vars($data);
 
@@ -19,7 +28,7 @@ trait ToArray
         }
 
         if (is_array($data)) {
-            return array_map([$this, 'dataToArray'], $data);
+            return array_map([$this, '_dataToArray'], $data);
         } else {
             return $data;
         }

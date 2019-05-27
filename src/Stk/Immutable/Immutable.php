@@ -6,7 +6,7 @@ use stdClass;
 
 trait Immutable
 {
-    protected $_data = null;
+    private $_data = null;
 
     public function __clone()
     {
@@ -15,71 +15,68 @@ trait Immutable
         }
     }
 
-    public function exists(...$args)
+    protected function seek($path, &$found = true)
     {
-        $path = $this->makePathFromArgs($args);
+        $found = true;
+        $elem  = $this->_data;
+        foreach ($path as $f) {
+            if (is_object($elem)) {
+                if (!property_exists($elem, $f)) {
+                    $found = false;
+
+                    return null;
+                }
+
+                $elem = $elem->$f;
+            } elseif (is_array($elem)) {
+                if (!array_key_exists($f, $elem)) {
+                    $found = false;
+
+                    return null;
+                }
+
+                $elem = $elem[$f];
+            } else {
+                $found = false;
+
+                return null;
+            }
+        }
+
+        return $elem;
+
+    }
+
+    public function has(...$args): bool
+    {
+        $path = $this->_makePathFromArgs($args);
 
         if (count($path) === 0) {
             return $this->_data === null;
         }
 
-        $elem = $this->_data;
-        foreach ($path as $f) {
-            if (is_object($elem)) {
-                if (!property_exists($elem, $f)) {
-                    return false;
-                }
+        $this->seek($path, $found);
 
-                $elem = $elem->$f;
-            }
-            elseif (is_array($elem)) {
-                if (!array_key_exists($f, $elem)) {
-                    return false;
-                }
-
-                $elem = $elem[$f];
-            }
-            else {
-                return false;
-            }
-        }
-
-        return true;
+        return $found;
     }
 
     public function get(...$args)
     {
-        $path = $this->makePathFromArgs($args);
+        $path = $this->_makePathFromArgs($args);
 
         if (count($path) === 0) {
             return is_object($this->_data) ? clone($this->_data) : $this->_data;
         }
 
-        $elem = $this->_data;
-        foreach ($path as $f) {
-            if (is_object($elem)) {
-                if (!property_exists($elem, $f)) {
-                    return null;
-                }
+        $elem = $this->seek($path, $found);
 
-                $elem = $elem->$f;
-            }
-            elseif (is_array($elem)) {
-                if (!array_key_exists($f, $elem)) {
-                    return null;
-                }
-
-                $elem = $elem[$f];
-            }
-            else {
-                return null;
-            }
+        if (!$found) {
+            return null;
         }
 
         if (is_object($elem)) {
             return clone($elem);
-        }
-        else {
+        } else {
             return $elem;
         }
     }
@@ -88,7 +85,7 @@ trait Immutable
     {
         $numArgs = count($args);
         if ($numArgs < 1) {
-            return false;
+            return $this;
         }
 
         $val = array_pop($args);
@@ -97,12 +94,12 @@ trait Immutable
 
         // set($data)
         if ($numArgs == 1) {
-            $this->_data = $val;
+            $c->_data = $val;
 
             return $c;
         }
 
-        $path = $this->makePathFromArgs($args);
+        $path = $this->_makePathFromArgs($args);
 
         if ($c->_data === null) {
             $c->_data = new stdClass();
@@ -114,7 +111,7 @@ trait Immutable
         $depth = count($path) - 1;
         foreach ($path as $idx => $f) {
             if (is_object($elem)) {
-                // dont make new elements on the last
+                // dont make new elements on the last leaf
                 if ($idx != $depth && !property_exists($elem, $f)) {
                     $elem->$f = new stdClass();
                 }
@@ -122,10 +119,9 @@ trait Immutable
                 if ($idx < $depth) {
                     $elem = &$elem->$f;
                 }
-            }
-            elseif (is_array($elem)) {
+            } elseif (is_array($elem)) {
                 if ($idx != $depth && !array_key_exists($f, $elem)) {
-                    $elem[$f] = array();
+                    $elem[$f] = [];
                 }
 
                 if ($idx < $depth) {
@@ -142,17 +138,16 @@ trait Immutable
             // copy on write scheme
             $elem         = clone($elem);
             $elem->$field = $val;
-        }
-        else {
+        } else {
             $elem[$field] = $val;
         }
 
         return $c;
     }
 
-    public function delete(...$args)
+    public function del(...$args)
     {
-        $path = $this->makePathFromArgs($args);
+        $path = $this->_makePathFromArgs($args);
 
         $c = clone($this);
 
@@ -178,8 +173,7 @@ trait Immutable
                 }
 
                 $elem = &$elem->$f;
-            }
-            elseif (is_array($elem)) {
+            } elseif (is_array($elem)) {
                 if (!array_key_exists($f, $elem)) {
                     return $c;
                 }
@@ -190,8 +184,7 @@ trait Immutable
 
         if (is_array($container)) {
             unset($container[$key]);
-        }
-        elseif (is_object($container)) {
+        } elseif (is_object($container)) {
             // copy on write scheme
             $container = clone $container;
             unset($container->$key);
@@ -200,21 +193,18 @@ trait Immutable
         return $c;
     }
 
-    protected function makePathFromArgs($args)
+    private function _makePathFromArgs($args)
     {
         $numArgs = count($args);
         if ($numArgs == 1 && is_string($args[0])) {
             return [$args[0]];
-        }
-        // get([$f1, $f2])
+        } // get([$f1, $f2])
         elseif ($numArgs == 1 && is_array($args[0])) {
             return $args[0];
-        }
-        // get($f1, $f2)
+        } // get($f1, $f2)
         elseif ($numArgs > 1) {
             return $args;
-        }
-        else {
+        } else {
             return [];
         }
     }
