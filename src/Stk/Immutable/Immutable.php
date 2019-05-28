@@ -6,7 +6,7 @@ use stdClass;
 
 trait Immutable
 {
-    private $_data = null;
+    protected $_data = null;
 
     public function __clone()
     {
