@@ -2,29 +2,36 @@
 
 namespace Stk\Immutable;
 
-use Closure;
-
-interface MapInterface
+interface MapInterface extends ImmutableInterface
 {
-    public function get(...$args);
-
     /**
-     * @param mixed ...$args
-     *
-     * @return MapInterface
-     */
-    public function set(...$args);
-
-    public function del(...$args);
-
-    public function has(...$args): bool;
-
-
-    /**
-     * @param Closure $onLeaf
+     * @param array $path
      *
      * @return mixed
      */
-    public function walk(Closure $onLeaf);
+    public function getIn(array $path);
+
+    /**
+     * @param array $path
+     * @param mixed $value
+     *
+     * @return MapInterface
+     */
+    public function setIn(array $path, $value): MapInterface;
+
+    /**
+     * @param array $path
+     *
+     * @return MapInterface
+     */
+    public function delIn(array $path): MapInterface;
+
+    /**
+     * @param array $path
+     *
+     * @return bool
+     */
+    public function hasIn(array $path): bool;
+
 
 }

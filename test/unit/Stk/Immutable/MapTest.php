@@ -2,14 +2,40 @@
 
 namespace StkTest\Immutable;
 
+use PHPUnit\Framework\TestCase;
 use Stk\Immutable\Map;
+use Stk\Immutable\MapInterface;
 
-class MapTest extends Base
+class MapTest extends TestCase
 {
-
     public function setUp()
     {
 
+    }
+
+    public function testImmutability()
+    {
+        $a = new Map((object)['x' => 'foo', 'y' => 'bar']);
+        $b = $a->set('x', 'whatever');
+
+        $this->assertNotSame($a, $b);
+
+        $b = $a->del('x');
+        $this->assertNotSame($a, $b);
+    }
+
+    public function testWithMutations()
+    {
+        $a = new Map((object)['x' => 'foo', 'y' => 'bar']);
+
+        $b = null;
+        $a->withMutations(function (MapInterface $a) use (&$b) {
+            $b = $a->set('x', 'whatever');
+            $b = $b->del('y');
+        });
+
+        $this->assertSame($a, $b);
+        $this->assertEquals((object)['x' => 'whatever'], $a->get());
     }
 
     public function testClone()
@@ -22,7 +48,7 @@ class MapTest extends Base
 
         // test with nested objects
         $a = new Map((object)['x' => (object)['y' => 'bar']]);
-        $b = $a->set(['x', 'y'], 'whatever');
+        $b = $a->setIn(['x', 'y'], 'whatever');
 
         $this->assertEquals((object)['x' => (object)['y' => 'bar']], $a->get());
         $this->assertEquals((object)['x' => (object)['y' => 'whatever']], $b->get());
@@ -40,7 +66,7 @@ class MapTest extends Base
     public function testSetObjectUsingArray()
     {
         $a = new Map();
-        $b = $a->set(['x'], 1);
+        $b = $a->setIn(['x'], 1);
         $this->assertEquals((object)['x' => 1], $b->get());
     }
 
@@ -65,14 +91,14 @@ class MapTest extends Base
     public function testSetObjectsUsingArrayPaths()
     {
         $a = new Map();
-        $b = $a->set(['x', 'y'], 1);
+        $b = $a->setIn(['x', 'y'], 1);
         $this->assertEquals((object)['x' => (object)['y' => 1]], $b->get());
     }
 
     public function testSetArrayUsingArray()
     {
         $a = new Map([]);
-        $b = $a->set(['x'], 1);
+        $b = $a->setIn(['x'], 1);
         $this->assertEquals(['x' => 1], $b->get());
     }
 
@@ -83,8 +109,8 @@ class MapTest extends Base
     public function testSetArrayIntoObject()
     {
         $a = new Map();
-        $b = $a->set(['x'], []);
-        $c = $b->set(['x', 0], 42);
+        $b = $a->setIn(['x'], []);
+        $c = $b->setIn(['x', 0], 42);
 
         $this->assertEquals((object)['x' => []], $b->get());
         $this->assertEquals((object)['x' => [42]], $c->get());
@@ -98,9 +124,9 @@ class MapTest extends Base
     public function testSetNestedArrayOfObjects()
     {
         $a = new Map();
-        $b = $a->set(['x'], []);
-        $c = $b->set(['x', 0], (object)['a' => 42]);
-        $d = $c->set(['x', 1], (object)['b' => 24]);
+        $b = $a->setIn(['x'], []);
+        $c = $b->setIn(['x', 0], (object)['a' => 42]);
+        $d = $c->setIn(['x', 1], (object)['b' => 24]);
 
         $this->assertEquals((object)['x' => []], $b->get());
         $this->assertEquals((object)['x' => [(object)['a' => 42]]], $c->get());
@@ -109,9 +135,20 @@ class MapTest extends Base
 
     // get
 
-    public function testGet()
+    public function testGetFromObjects()
     {
         $a = new Map((object)['b' => 24, 'c' => (object)['d' => 42]]);
+
+        $this->assertEquals(24, $a->get('b'));
+        $this->assertEquals(42, $a->get('c', 'd'));
+        $this->assertNull($a->get('x'));
+        $this->assertNull($a->get('c', 'x'));
+        $this->assertNull($a->get('c', 'd', 'x'));
+    }
+
+    public function testGetFromArray()
+    {
+        $a = new Map(['b' => 24, 'c' => ['d' => 42]]);
 
         $this->assertEquals(24, $a->get('b'));
         $this->assertEquals(42, $a->get('c', 'd'));
