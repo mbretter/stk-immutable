@@ -19,3 +19,10 @@ $b = $a->set('x', 'whatever');
 
 Calling the set method on the object $a does not modify it, a clone incuding the modified value is returned instead.
 
+Comparing two Maps is easy, there is no need for writing complicated and resource consuming comparision functions, simply use the identical operator:
+
+```php
+if ($a === $b) {
+    ...
+}
+```
