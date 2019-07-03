@@ -18,11 +18,12 @@ trait Immutable
 
     public function withMutations(Closure $cb)
     {
-        $this->_isMutable = true;
-        $cb($this);
-        $this->_isMutable = false;
+        $c             = $this->getClone();
+        $c->_isMutable = true;
+        $cb($c);
+        $c->_isMutable = false;
 
-        return $this;
+        return $c;
     }
 
     protected function getClone()

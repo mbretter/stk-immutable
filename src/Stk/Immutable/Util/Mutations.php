@@ -44,31 +44,30 @@ class Mutations
         return $this->_deleted;
     }
 
+    /**
+     * build the modified and deleted data objects
+     */
     protected function build()
     {
-        $this->_modified = clone $this->_new;
-
         // filter out all identical values and keep modified
-        $this->_new->walk(function ($path, $newVal) {
-
-            $oldVal = call_user_func_array([$this->_old, 'get'], $path);
-            if ($oldVal === $newVal) {
-                $this->_modified->withMutations(function (ImmutableInterface $m) use ($path) {
-                    call_user_func_array([$m, 'del'], $path);
-                });
-            }
+        $this->_modified = $this->_new->withMutations(function (ImmutableInterface $n) {
+            $n->walk(function ($path, $newVal) use ($n) {
+                $oldVal = call_user_func_array([$this->_old, 'get'], $path);
+                if ($oldVal === $newVal) {
+                    call_user_func_array([$n, 'del'], $path);
+                }
+            });
         });
 
-        $this->_deleted = clone $this->_old;
-
-        // filter out all existing values (intersect)
-        $this->_old->walk(function ($path, $oldVal) {
-            if (call_user_func_array([$this->_new, 'has'], $path)) {
-                $this->_deleted->withMutations(function (ImmutableInterface $m) use ($path) {
-                    call_user_func_array([$m, 'del'], $path);
-                });
-            }
+        // filter out all values which are still present in the new object
+        $this->_deleted = $this->_old->withMutations(function (ImmutableInterface $o) {
+            $o->walk(function ($path, $oldVal) use ($o) {
+                if (call_user_func_array([$this->_new, 'has'], $path)) {
+                    call_user_func_array([$o, 'del'], $path);
+                }
+            });
         });
+
     }
 
 }

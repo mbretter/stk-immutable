@@ -26,16 +26,15 @@ class MapTest extends TestCase
 
     public function testWithMutations()
     {
-        $a = new Map((object)['x' => 'foo', 'y' => 'bar']);
+        $x = $a = new Map((object)['x' => 'foo', 'y' => 'bar']);
 
-        $b = null;
-        $a->withMutations(function (MapInterface $a) use (&$b) {
-            $b = $a->set('x', 'whatever');
-            $b = $b->del('y');
+        $b = $a->withMutations(function (MapInterface $a) use (&$b) {
+            $a->set('x', 'whatever');
+            $a->del('y');
         });
 
-        $this->assertSame($a, $b);
-        $this->assertEquals((object)['x' => 'whatever'], $a->get());
+        $this->assertSame($a, $x);
+        $this->assertEquals((object)['x' => 'whatever'], $b->get());
     }
 
     public function testClone()
