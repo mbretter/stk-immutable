@@ -4,7 +4,8 @@ namespace StkTest\Immutable\Additions;
 
 use PHPUnit\Framework\TestCase;
 use Stk\Immutable\Map;
-use Stk\Immutable\Util\Mutations;
+use Stk\Immutable\Ops\Complement;
+use Stk\Immutable\Ops\Diff;
 
 class MutationsTest extends TestCase
 {
@@ -21,9 +22,8 @@ class MutationsTest extends TestCase
             'b1' => 'bv1',
         ]);
 
-        $mutations = new Mutations($m1, $m2);
-        $this->assertEquals([], $mutations->getModified()->get());
-        $this->assertEquals([], $mutations->getDeleted()->get());
+        $this->assertEquals([], (new Diff)($m1, $m2)->get());
+        $this->assertEquals([], (new Complement())($m1, $m2)->get());
     }
 
     public function testModifiedSimpleDiffers()
@@ -38,10 +38,8 @@ class MutationsTest extends TestCase
             'b1' => 'bv2',
         ]);
 
-        $mutations = new Mutations($m1, $m2);
-        $this->assertEquals(['b1' => 'bv2'], $mutations->getModified()->get());
-        $this->assertEquals([], $mutations->getDeleted()->get());
-
+        $this->assertEquals(['b1' => 'bv2'], (new Diff)($m1, $m2)->get());
+        $this->assertEquals([], (new Complement())($m1, $m2)->get());
     }
 
     public function testModifiedWithDeleted()
@@ -58,8 +56,6 @@ class MutationsTest extends TestCase
             'b1' => 'bv1',
         ]);
 
-        $mutations = new Mutations($m1, $m2);
-
         $expected = [
             'c1' => ['foo', 'bar'],
             'd1' => (object)[
@@ -68,8 +64,8 @@ class MutationsTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expected, $mutations->getDeleted()->get());
-        $this->assertEquals([], $mutations->getModified()->get());
+        $this->assertEquals([], (new Diff)($m1, $m2)->get());
+        $this->assertEquals($expected, (new Complement())($m1, $m2)->get());
     }
 
     public function testModifiedComplex1()
@@ -86,8 +82,6 @@ class MutationsTest extends TestCase
             'd1' => (object)['prop1' => 'val1', 'prop2' => 'val2']
         ]);
 
-        $mutations = new Mutations($m1, $m2);
-
         $expected = [
             'c1' => ['foo', 'bar'],
             'd1' => (object)[
@@ -96,8 +90,8 @@ class MutationsTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expected, $mutations->getModified()->get());
-        $this->assertEquals([], $mutations->getDeleted()->get());
+        $this->assertEquals($expected, (new Diff)($m1, $m2)->get());
+        $this->assertEquals([], (new Complement())($m1, $m2)->get());
     }
 
     public function testDeletedDiffers1()
@@ -114,8 +108,6 @@ class MutationsTest extends TestCase
             'c1' => ['foo', 'rab'],
         ]);
 
-        $mutations = new Mutations($m1, $m2);
-
         $expectedModified = [
             'c1' => ['foo', 'rab'],
         ];
@@ -127,8 +119,8 @@ class MutationsTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expectedModified, $mutations->getModified()->get());
-        $this->assertEquals($expectedDeleted, $mutations->getDeleted()->get());
+        $this->assertEquals($expectedModified, (new Diff)($m1, $m2)->get());
+        $this->assertEquals($expectedDeleted, (new Complement())($m1, $m2)->get());
     }
 
 }

@@ -12,6 +12,8 @@ class Map implements MapInterface
     use Methods\WriteIn;
     use Methods\DeleteIn;
 
+    protected $_current;
+
     public function __construct($data = null)
     {
         $this->_data = $data;
@@ -107,6 +109,4 @@ class Map implements MapInterface
             array_pop($path);
         }
     }
-
-
 }
