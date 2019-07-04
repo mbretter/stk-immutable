@@ -1,15 +1,13 @@
 <?php
 
-namespace StkTest\Immutable\Additions;
+namespace StkTest\Immutable\Ops;
 
 use PHPUnit\Framework\TestCase;
 use Stk\Immutable\Map;
 use Stk\Immutable\Ops\Complement;
-use Stk\Immutable\Ops\Diff;
 
-class MutationsTest extends TestCase
+class ComplementTest extends TestCase
 {
-    // modified
     public function testModifiedSimpleEquals()
     {
         $m1 = new Map([
@@ -22,7 +20,6 @@ class MutationsTest extends TestCase
             'b1' => 'bv1',
         ]);
 
-        $this->assertEquals([], (new Diff)($m1, $m2)->get());
         $this->assertEquals([], (new Complement())($m1, $m2)->get());
     }
 
@@ -38,7 +35,6 @@ class MutationsTest extends TestCase
             'b1' => 'bv2',
         ]);
 
-        $this->assertEquals(['b1' => 'bv2'], (new Diff)($m1, $m2)->get());
         $this->assertEquals([], (new Complement())($m1, $m2)->get());
     }
 
@@ -64,7 +60,6 @@ class MutationsTest extends TestCase
             ],
         ];
 
-        $this->assertEquals([], (new Diff)($m1, $m2)->get());
         $this->assertEquals($expected, (new Complement())($m1, $m2)->get());
     }
 
@@ -82,15 +77,6 @@ class MutationsTest extends TestCase
             'd1' => (object)['prop1' => 'val1', 'prop2' => 'val2']
         ]);
 
-        $expected = [
-            'c1' => ['foo', 'bar'],
-            'd1' => (object)[
-                'prop1' => 'val1',
-                'prop2' => 'val2',
-            ],
-        ];
-
-        $this->assertEquals($expected, (new Diff)($m1, $m2)->get());
         $this->assertEquals([], (new Complement())($m1, $m2)->get());
     }
 
@@ -108,10 +94,6 @@ class MutationsTest extends TestCase
             'c1' => ['foo', 'rab'],
         ]);
 
-        $expectedModified = [
-            'c1' => ['foo', 'rab'],
-        ];
-
         $expectedDeleted = [
             'd1' => (object)[
                 'prop1' => 'val1',
@@ -119,7 +101,6 @@ class MutationsTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expectedModified, (new Diff)($m1, $m2)->get());
         $this->assertEquals($expectedDeleted, (new Complement())($m1, $m2)->get());
     }
 
