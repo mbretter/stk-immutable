@@ -16,12 +16,19 @@ trait Immutable
         }
     }
 
+    /**
+     * @param Closure $cb
+     *
+     * @return ImmutableInterface
+     */
     public function withMutations(Closure $cb)
     {
         $c             = $this->getClone();
         $c->_isMutable = true;
         $cb($c);
         $c->_isMutable = false;
+
+        /** @var ImmutableInterface $c */
 
         return $c;
     }

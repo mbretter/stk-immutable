@@ -6,6 +6,7 @@
   "homepage": "https://www.bretterklieber.com",
   "license": "MIT",
   "require": {
+    "ext-json": "*"
   },
   "require-dev": {
     "phpunit/phpunit": "^7.5",
