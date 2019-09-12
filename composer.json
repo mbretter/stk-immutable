@@ -4,7 +4,7 @@
   "description": "Stk Immutable Data objects",
   "keywords": ["stk","immutable"],
   "homepage": "https://www.bretterklieber.com",
-  "license": "MIT",
+  "license": "BSD-3-Clause",
   "require": {
     "ext-json": "*"
   },

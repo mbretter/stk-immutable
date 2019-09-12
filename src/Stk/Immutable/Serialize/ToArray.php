@@ -13,10 +13,6 @@ trait ToArray
      */
     private function _dataToArray($data)
     {
-        if ($data === null) {
-            return [];
-        }
-
         if (is_object($data) && $data instanceof stdClass) {
             $ovs = get_object_vars($data);
 
