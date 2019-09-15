@@ -29,7 +29,6 @@ trait Immutable
         $c->_isMutable = false;
 
         /** @var ImmutableInterface $c */
-
         return $c;
     }
 
