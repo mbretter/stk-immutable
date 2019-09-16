@@ -33,6 +33,45 @@ class RecordTest extends TestCase
         $this->assertEquals(['x' => 'whatever'], $b->get());
     }
 
+    public function testGet()
+    {
+        $a = new Record(['x' => 'foo', 'y' => 'bar']);
+
+        $this->assertEquals('foo', $a->get('x'));
+    }
+
+    public function testSetWithInsufficientParams()
+    {
+        $a = new Record(['x' => 'foo', 'y' => 'bar']);
+
+        $this->assertSame($a, $a->set());
+    }
+
+    public function testSetData()
+    {
+        $a = new Record(['x' => 'foo', 'y' => 'bar']);
+
+        $b = $a->set(['a' => 'abc']);
+        $this->assertNotSame($a, $b);
+
+        $this->assertEquals(['a' => 'abc'], $b->get());
+    }
+
+    public function testHas()
+    {
+        $a = new Record(['x' => 'foo', 'y' => 'bar']);
+
+        $this->assertFalse($a->has('alice'));
+        $this->assertTrue($a->has('x'));
+    }
+
+    public function testHasWithInsufficientParams()
+    {
+        $a = new Record(['x' => 'foo', 'y' => 'bar']);
+
+        $this->assertFalse($a->has());
+    }
+
     public function testClone()
     {
         $a = new Record(['x' => 'foo', 'y' => 'bar']);

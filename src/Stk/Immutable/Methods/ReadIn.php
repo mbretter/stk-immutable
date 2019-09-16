@@ -39,7 +39,7 @@ trait ReadIn
     final protected function _hasIn(&$data, $path): bool
     {
         if (count($path) === 0) {
-            return $data === null;
+            return $data !== null;
         }
 
         $this->_seek($data, $path, $found);

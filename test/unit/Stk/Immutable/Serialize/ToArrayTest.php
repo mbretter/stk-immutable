@@ -1,6 +1,6 @@
 <?php
 
-namespace StkTest\Immutable\Additions;
+namespace StkTest\Immutable\Serialize;
 
 use PHPUnit\Framework\TestCase;
 

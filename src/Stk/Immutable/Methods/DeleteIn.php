@@ -2,13 +2,21 @@
 
 namespace Stk\Immutable\Methods;
 
+use stdClass;
+
 trait DeleteIn
 {
 
     final protected function _delIn(&$data, $path)
     {
         if (count($path) === 0) {
-            $data = null;
+            if (is_object($data)) {
+                $data = new stdClass();
+            } elseif (is_array($data)) {
+                $data = [];
+            } else {
+                $data = null;
+            }
 
             return $data;
         }

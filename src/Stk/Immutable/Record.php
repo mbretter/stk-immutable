@@ -35,14 +35,18 @@ class Record implements ImmutableInterface
      */
     public function set(...$args): ImmutableInterface
     {
-        if (count($args) < 2) {
+        if (count($args) < 1) {
             return $this;
         }
 
         /** @var ImmutableInterface $clone */
         $clone = $this->getClone();
 
-        $clone->_data[$args[0]] = $args[1];
+        if (count($args) === 1) {
+            $clone->_data = $args[0];
+        } else {
+            $clone->_data[$args[0]] = $args[1];
+        }
 
         return $clone;
     }

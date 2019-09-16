@@ -3,8 +3,10 @@
 namespace StkTest\Immutable;
 
 use PHPUnit\Framework\TestCase;
+use stdClass;
 use Stk\Immutable\Map;
 use Stk\Immutable\MapInterface;
+use Stk\Immutable\Record;
 
 class MapTest extends TestCase
 {
@@ -65,7 +67,6 @@ class MapTest extends TestCase
         $this->assertEquals((object)['x' => 1], $b->get());
     }
 
-
     public function testSetNull()
     {
         $a = new Map((object)['x' => 'foo', 'y' => 'bar']);
@@ -78,6 +79,13 @@ class MapTest extends TestCase
         $this->assertEquals((object)['x' => 'foo', 'y' => 'bar'], $a->get());
         $this->assertEquals(null, $b->get());
         $this->assertEquals((object)['foo' => 'bar'], $c->get());
+    }
+
+    public function testSetData()
+    {
+        $a = new Map();
+        $b = $a->set(['x' => 'xyz']);
+        $this->assertEquals(['x' => 'xyz'], $b->get());
     }
 
     /**
@@ -128,6 +136,26 @@ class MapTest extends TestCase
         $this->assertEquals((object)['x' => [(object)['a' => 42], (object)['b' => 24]]], $d->get());
     }
 
+    public function testSetInArray()
+    {
+        $data = ['x' => [['a' => 42], ['b' => 24]]];
+        $a = new Map($data);
+
+        $expected1 = $expected2 = $data;
+        $expected1['x'][0]['foo'] = 'bar';
+        $this->assertEquals($expected1, $a->setIn(['x', 0, 'foo'], 'bar')->get());
+
+        $expected2['z'] = [['foo' => 'bar']];
+        $this->assertEquals($expected2, $a->setIn(['z', 0, 'foo'], 'bar')->get());
+    }
+
+    public function testSetWithInsufficientParams()
+    {
+        $a = new Map(['x' => 'foo', 'y' => 'bar']);
+
+        $this->assertSame($a, $a->set());
+    }
+
     // get
 
     public function testGetFromObjects()
@@ -152,13 +180,51 @@ class MapTest extends TestCase
         $this->assertNull($a->get('c', 'd', 'x'));
     }
 
+    public function testGetObject()
+    {
+        $o = (object)['d' => 42];
+        $a = new Map((object)['b' => 24, 'c' => $o]);
+
+        // must be a clonse
+        $this->assertNotSame($o, $a->get('c'));
+    }
+
+    public function testGetInWithEmptyPath()
+    {
+        $data = (object)['b' => 24, 'c' => (object)['d' => 42]];
+        $a = new Map($data);
+
+        // must be a clonse
+        $this->assertEquals($data, $a->getIn([]));
+    }
+
+    // has
+
+    public function testHasInObject()
+    {
+        $a = new Map((object)['b' => 24, 'c' => (object)['d' => 42]]);
+
+        $this->assertTrue($a->hasIn(['c', 'd']));
+        $this->assertFalse($a->hasIn(['foo']));
+        $this->assertTrue($a->hasIn([]));
+    }
+
+    public function testHasInArray()
+    {
+        $a = new Map(['b' => 24, 'c' => (object)['d' => 42]]);
+
+        $this->assertTrue($a->hasIn(['c', 'd']));
+        $this->assertFalse($a->hasIn(['foo']));
+    }
+
+
     // delete
 
     /**
      * {b:24,c:{d:42}}
      * {b:24,c:[42]}
      */
-    public function testDeleteObject()
+    public function testDelObject()
     {
         $a = new Map((object)['b' => 24, 'c' => (object)['d' => 42]]);
 
@@ -180,7 +246,7 @@ class MapTest extends TestCase
      * {b:24,c:{d:42}}
      * {b:24,c:[42]}
      */
-    public function testDeleteArray()
+    public function testDelArray()
     {
         $a = new Map(['b' => 24, 'c' => ['d' => 42]]);
 
@@ -192,6 +258,42 @@ class MapTest extends TestCase
         $this->assertEquals(['b' => 24, 'c' => ['d' => 42]], $a->get()); // orig object must not mutate
         $this->assertEquals(['b' => 24, 'c' => []], $c->get());
     }
+
+    public function testDelAllArray()
+    {
+        $a = new Map(['b' => 24, 'c' => ['d' => 42]]);
+
+        $b = $a->del();
+        $this->assertEquals([], $b->get());
+    }
+
+    public function testDelInAllObject()
+    {
+        $a = new Map((object)['b' => 24, 'c' => ['d' => 42]]);
+
+        $b = $a->delIn([]);
+        $this->assertEquals(new stdClass(), $b->get()); // orig object must not mutate
+    }
+
+    public function testDelInObjectNotFound()
+    {
+        $a = new Map((object)['b' => 24, 'c' => ['d' => 42]]);
+
+        $b = $a->delIn(['x']);
+        $this->assertEquals($b, $a);
+        $this->assertNotSame($b, $a);
+    }
+
+    public function testDelInArrayNotFound()
+    {
+        $a = new Map(['b' => 24, 'c' => ['d' => 42]]);
+
+        $b = $a->delIn(['x']);
+        $this->assertEquals($b, $a);
+        $this->assertNotSame($b, $a);
+    }
+
+    // walk
 
     public function testWalk()
     {
