@@ -8,10 +8,6 @@ use Stk\Immutable\MapInterface;
 
 class MapTest extends TestCase
 {
-    public function setUp()
-    {
-
-    }
 
     public function testImmutability()
     {
