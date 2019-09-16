@@ -27,11 +27,6 @@ class MyMap
 class ToArrayTest extends TestCase
 {
 
-    public function setUp()
-    {
-
-    }
-
     public function testObject()
     {
         $a = new MyMap((object)['x' => 'foo', 'y' => 'bar']);
