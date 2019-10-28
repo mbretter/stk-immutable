@@ -99,12 +99,30 @@ class Map implements MapInterface
 
         foreach ($a as $k => $v) {
             $path[] = $k;
-            if (is_array($v) || $v instanceof stdClass) {
-                $this->_walk($v, $callback);
+            if (is_array($v) || is_object($v)) {
+                // do not recurse into, if array or object is empty
+                if ($this->isNonScalarEmpty($v)) {
+                    $callback($path, $v);
+                } else {
+                    $this->_walk($v, $callback);
+                }
             } else {
                 $callback($path, $v);
             }
             array_pop($path);
         }
+    }
+
+    protected function isNonScalarEmpty($v)
+    {
+        if (is_array($v)) {
+            return count($v) === 0;
+        }
+
+        if (is_object($v)) {
+            return count(get_object_vars($v)) === 0;
+        }
+
+        return false;
     }
 }

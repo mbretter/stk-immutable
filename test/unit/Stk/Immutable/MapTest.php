@@ -303,12 +303,14 @@ class MapTest extends TestCase
             'c' => ['foo', 'bar'],
             'd' => (object)['d1' => 'val1', 'd2' => 'val2'],
             'e' => (object)['e1' => 'val1', 'e2' => ['v1', 'v2', null]],
-            'f' => (object)['f1' => 'val1', 'f2' => ['v1', ['x1' => 'y1', 'x2' => 'y2'], null]]
+            'f' => (object)['f1' => 'val1', 'f2' => ['v1', ['x1' => 'y1', 'x2' => 'y2'], null]],
+            'g' => [],
+            'h' => new stdClass()
         ]);
 
         $str = '';
         $m1->walk(function ($path, $value) use (&$str) {
-            $str .= sprintf("%s:%s\n", implode(",", $path), is_null($value) ? '-null-' : $value);
+            $str .= sprintf("%s:%s\n", implode(",", $path), is_null($value) ? '-null-' : (is_scalar($value) ? $value : json_encode($value)));
         });
 
         $this->assertEquals("a:av1
@@ -326,6 +328,8 @@ f,f2,0:v1
 f,f2,1,x1:y1
 f,f2,1,x2:y2
 f,f2,2:-null-
+g:[]
+h:{}
 ", $str);
     }
 }
