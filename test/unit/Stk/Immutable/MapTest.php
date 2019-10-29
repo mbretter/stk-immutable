@@ -2,6 +2,7 @@
 
 namespace StkTest\Immutable;
 
+use DateTime;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Stk\Immutable\Map;
@@ -297,6 +298,7 @@ class MapTest extends TestCase
 
     public function testWalk()
     {
+        $dt = new DateTime('2019-10-22 14:12:00');
         $m1 = new Map([
             'a' => 'av1',
             'b' => 'bv1',
@@ -305,7 +307,8 @@ class MapTest extends TestCase
             'e' => (object)['e1' => 'val1', 'e2' => ['v1', 'v2', null]],
             'f' => (object)['f1' => 'val1', 'f2' => ['v1', ['x1' => 'y1', 'x2' => 'y2'], null]],
             'g' => [],
-            'h' => new stdClass()
+            'h' => new stdClass(),
+            'i' => $dt
         ]);
 
         $str = '';
@@ -330,6 +333,7 @@ f,f2,1,x2:y2
 f,f2,2:-null-
 g:[]
 h:{}
+i:{\"date\":\"2019-10-22 14:12:00.000000\",\"timezone_type\":3,\"timezone\":\"UTC\"}
 ", $str);
     }
 }
