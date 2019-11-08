@@ -50,7 +50,6 @@ class Map implements MapInterface
 
     public function setIn(array $path, $val): MapInterface
     {
-        /** @var Map $c */
         $c = $this->getClone();
 
         $c->_setIn($c->_data, $path, $val);
@@ -61,7 +60,7 @@ class Map implements MapInterface
     /**
      * @param mixed ...$args
      *
-     * @return MapInterface
+     * @return static
      */
     public function del(...$args): MapInterface
     {
@@ -70,7 +69,6 @@ class Map implements MapInterface
 
     public function delIn(array $path): MapInterface
     {
-        /** @var Map $c */
         $c = $this->getClone();
 
         $c->_delIn($c->_data, $path);

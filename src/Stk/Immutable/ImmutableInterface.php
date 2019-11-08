@@ -16,14 +16,14 @@ interface ImmutableInterface
     /**
      * @param mixed ...$args
      *
-     * @return ImmutableInterface
+     * @return static
      */
     public function del(...$args);
 
     /**
      * @param mixed ...$args
      *
-     * @return ImmutableInterface
+     * @return static
      */
     public function set(...$args);
 
@@ -48,7 +48,7 @@ interface ImmutableInterface
      * only available for set/del
      * @param Closure $doChanges the Map itself is passed as the only parameter
      *
-     * @return mixed
+     * @return static
      */
     public function withMutations(Closure $doChanges);
 }

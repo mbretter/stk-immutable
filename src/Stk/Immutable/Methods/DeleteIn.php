@@ -7,6 +7,13 @@ use stdClass;
 trait DeleteIn
 {
 
+    /**
+     * remove element from 3d data structure, return the deleted element
+     * @param $data
+     * @param $path
+     *
+     * @return array|stdClass|null
+     */
     final protected function _delIn(&$data, $path)
     {
         if (count($path) === 0) {

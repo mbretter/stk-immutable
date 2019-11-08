@@ -31,7 +31,7 @@ class Record implements ImmutableInterface
     /**
      * @param mixed ...$args
      *
-     * @return ImmutableInterface
+     * @return ImmutableInterface|static
      */
     public function set(...$args): ImmutableInterface
     {
@@ -51,14 +51,14 @@ class Record implements ImmutableInterface
         return $clone;
     }
 
+
     /**
      * @param mixed ...$args
      *
-     * @return MapInterface
+     * @return ImmutableInterface|static
      */
-    public function del(...$args): ImmutableInterface
+    public function del(...$args)
     {
-        /** @var ImmutableInterface $clone */
         $clone = $this->getClone();
         unset($clone->_data[$args[0]]);
 

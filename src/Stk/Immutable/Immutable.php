@@ -19,7 +19,7 @@ trait Immutable
     /**
      * @param Closure $cb
      *
-     * @return ImmutableInterface
+     * @return static
      */
     public function withMutations(Closure $cb)
     {
@@ -28,10 +28,12 @@ trait Immutable
         $cb($c);
         $c->_isMutable = false;
 
-        /** @var ImmutableInterface $c */
         return $c;
     }
 
+    /**
+     * @return static
+     */
     protected function getClone()
     {
         return $this->_isMutable ? $this : clone($this);
