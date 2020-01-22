@@ -7,7 +7,6 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 use Stk\Immutable\Map;
 use Stk\Immutable\MapInterface;
-use Stk\Immutable\Record;
 
 class MapTest extends TestCase
 {
@@ -135,14 +134,24 @@ class MapTest extends TestCase
         $this->assertEquals((object)['x' => []], $b->get());
         $this->assertEquals((object)['x' => [(object)['a' => 42]]], $c->get());
         $this->assertEquals((object)['x' => [(object)['a' => 42], (object)['b' => 24]]], $d->get());
+
+        // alternative set using var-args
+        $a = new Map();
+        $b = $a->set('x', []);
+        $c = $b->set('x', 0, (object)['a' => 42]);
+        $d = $c->set('x', 1, (object)['b' => 24]);
+
+        $this->assertEquals((object)['x' => []], $b->get());
+        $this->assertEquals((object)['x' => [(object)['a' => 42]]], $c->get());
+        $this->assertEquals((object)['x' => [(object)['a' => 42], (object)['b' => 24]]], $d->get());
     }
 
     public function testSetInArray()
     {
         $data = ['x' => [['a' => 42], ['b' => 24]]];
-        $a = new Map($data);
+        $a    = new Map($data);
 
-        $expected1 = $expected2 = $data;
+        $expected1                = $expected2 = $data;
         $expected1['x'][0]['foo'] = 'bar';
         $this->assertEquals($expected1, $a->setIn(['x', 0, 'foo'], 'bar')->get());
 
@@ -193,7 +202,7 @@ class MapTest extends TestCase
     public function testGetInWithEmptyPath()
     {
         $data = (object)['b' => 24, 'c' => (object)['d' => 42]];
-        $a = new Map($data);
+        $a    = new Map($data);
 
         // must be a clonse
         $this->assertEquals($data, $a->getIn([]));
@@ -293,6 +302,7 @@ class MapTest extends TestCase
         $this->assertEquals($b, $a);
         $this->assertNotSame($b, $a);
     }
+
 
     // walk
 
