@@ -11,7 +11,7 @@ use Stk\Immutable\ImmutableInterface;
  */
 class Diff
 {
-    public function __invoke(ImmutableInterface $a, ImmutableInterface $b)
+    public function __invoke(ImmutableInterface $a, ImmutableInterface $b): ImmutableInterface
     {
         // filter out all identical values and keep modified and new values
         return $b->withMutations(function (ImmutableInterface $n) use ($a) {

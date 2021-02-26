@@ -8,17 +8,16 @@ class Record implements ImmutableInterface
 {
     use Immutable;
 
+    /**
+     * Record constructor.
+     * @param mixed $data
+     */
     public function __construct($data = [])
     {
         $this->_data = $data;
     }
 
-    /**
-     * @param array $args
-     *
-     * @return mixed|null
-     */
-    public function get(...$args)
+    public function get(mixed ...$args): mixed
     {
         if (count($args) === 0) {
             return $this->_data;
@@ -28,18 +27,12 @@ class Record implements ImmutableInterface
         return array_key_exists($key, $this->_data) ? $this->_data[$key] : null;
     }
 
-    /**
-     * @param mixed ...$args
-     *
-     * @return ImmutableInterface|static
-     */
-    public function set(...$args): ImmutableInterface
+    public function set(mixed ...$args): static
     {
         if (count($args) < 1) {
             return $this;
         }
 
-        /** @var ImmutableInterface $clone */
         $clone = $this->getClone();
 
         if (count($args) === 1) {
@@ -51,13 +44,7 @@ class Record implements ImmutableInterface
         return $clone;
     }
 
-
-    /**
-     * @param mixed ...$args
-     *
-     * @return ImmutableInterface|static
-     */
-    public function del(...$args)
+    public function del(mixed ...$args): static
     {
         $clone = $this->getClone();
         unset($clone->_data[$args[0]]);
@@ -65,12 +52,7 @@ class Record implements ImmutableInterface
         return $clone;
     }
 
-    /**
-     * @param mixed ...$args
-     *
-     * @return bool
-     */
-    public function has(...$args): bool
+    public function has(mixed ...$args): bool
     {
         if (count($args) === 0) {
             return false;
@@ -79,10 +61,7 @@ class Record implements ImmutableInterface
         return array_key_exists($args[0], $this->_data);
     }
 
-    /**
-     * @param Closure $callback
-     */
-    public function walk(Closure $callback)
+    public function walk(Closure $callback): void
     {
         // swap params, make walk uniform
         array_walk($this->_data, function ($value, $key) use ($callback) {

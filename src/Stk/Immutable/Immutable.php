@@ -6,8 +6,8 @@ use Closure;
 
 trait Immutable
 {
-    protected $_data = null;
-    private $_isMutable = false;
+    protected mixed $_data = null;
+    private bool $_isMutable = false;
 
     public function __clone()
     {
@@ -16,25 +16,17 @@ trait Immutable
         }
     }
 
-    /**
-     * @param Closure $cb
-     *
-     * @return static
-     */
-    public function withMutations(Closure $cb)
+    public function withMutations(Closure $doChanges): static
     {
         $c             = $this->getClone();
         $c->_isMutable = true;
-        $cb($c);
+        $doChanges($c);
         $c->_isMutable = false;
 
         return $c;
     }
 
-    /**
-     * @return static
-     */
-    protected function getClone()
+    protected function getClone(): static
     {
         return $this->_isMutable ? $this : clone($this);
     }

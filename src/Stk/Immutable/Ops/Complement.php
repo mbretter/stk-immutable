@@ -12,7 +12,7 @@ use Stk\Immutable\ImmutableInterface;
  */
 class Complement
 {
-    public function __invoke(ImmutableInterface $a, ImmutableInterface $b)
+    public function __invoke(ImmutableInterface $a, ImmutableInterface $b): ImmutableInterface
     {
         // filter out all values which are still present in the new object
         return $a->withMutations(function (ImmutableInterface $a) use ($b) {

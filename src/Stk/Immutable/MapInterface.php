@@ -4,34 +4,11 @@ namespace Stk\Immutable;
 
 interface MapInterface extends ImmutableInterface
 {
-    /**
-     * @param array $path
-     *
-     * @return mixed
-     */
-    public function getIn(array $path);
+    public function getIn(array $path): mixed;
 
-    /**
-     * @param array $path
-     * @param mixed $value
-     *
-     * @return MapInterface
-     */
-    public function setIn(array $path, $value): MapInterface;
+    public function setIn(array $path, mixed $value): static;
 
-    /**
-     * @param array $path
-     *
-     * @return MapInterface
-     */
-    public function delIn(array $path): MapInterface;
+    public function delIn(array $path): static;
 
-    /**
-     * @param array $path
-     *
-     * @return bool
-     */
     public function hasIn(array $path): bool;
-
-
 }

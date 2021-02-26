@@ -6,49 +6,22 @@ use Closure;
 
 interface ImmutableInterface
 {
-    /**
-     * @param mixed ...$args
-     *
-     * @return mixed
-     */
-    public function get(...$args);
+    public function get(mixed ...$args): mixed;
 
-    /**
-     * @param mixed ...$args
-     *
-     * @return static
-     */
-    public function del(...$args);
+    public function del(mixed ...$args): static;
 
-    /**
-     * @param mixed ...$args
-     *
-     * @return static
-     */
-    public function set(...$args);
+    public function set(mixed ...$args): static;
 
-    /**
-     * @param mixed ...$args
-     *
-     * @return bool
-     */
-    public function has(...$args): bool;
+    public function has(mixed ...$args): bool;
 
-    /**
+    /*
      * Walk through the Immutable, pass field/path and value to the callback
-     *
-     * @param Closure $callback
-     *
-     * @return mixed
      */
-    public function walk(Closure $callback);
+    public function walk(Closure $callback): void;
 
-    /**
+    /*
      * turns off immutability, useful for bulk updates to avoid extraneous clones
      * only available for set/del
-     * @param Closure $doChanges the Map itself is passed as the only parameter
-     *
-     * @return static
      */
-    public function withMutations(Closure $doChanges);
+    public function withMutations(Closure $doChanges): static;
 }

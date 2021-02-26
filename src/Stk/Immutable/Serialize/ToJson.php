@@ -4,12 +4,7 @@ namespace Stk\Immutable\Serialize;
 
 trait ToJson
 {
-    /**
-     * @param $data
-     *
-     * @return string
-     */
-    private function _dataToJson($data)
+    private function _dataToJson(mixed $data): string
     {
         return json_encode($data);
     }

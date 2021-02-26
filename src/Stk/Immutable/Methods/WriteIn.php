@@ -6,7 +6,7 @@ use stdClass;
 
 trait WriteIn
 {
-    final protected function _setIn(&$data, array $path, $val)
+    final protected function _setIn(mixed &$data, array $path, mixed $val): mixed
     {
         // set($data)
         if (!count($path)) {

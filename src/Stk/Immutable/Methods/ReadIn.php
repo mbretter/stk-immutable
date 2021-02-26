@@ -4,7 +4,7 @@ namespace Stk\Immutable\Methods;
 
 trait ReadIn
 {
-    final protected function _seek(&$target, $path, &$found = true)
+    final protected function _seek(mixed &$target, array $path, ?bool &$found = true): mixed
     {
         $found = true;
         $elem  = $target;
@@ -36,7 +36,7 @@ trait ReadIn
 
     }
 
-    final protected function _hasIn(&$data, $path): bool
+    final protected function _hasIn(mixed &$data, array $path): bool
     {
         if (count($path) === 0) {
             return $data !== null;
@@ -47,7 +47,7 @@ trait ReadIn
         return $found;
     }
 
-    final protected function _getIn(&$data, array $path)
+    final protected function _getIn(mixed &$data, array $path): mixed
     {
         if (count($path) === 0) {
             return $data;

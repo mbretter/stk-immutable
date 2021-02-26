@@ -12,17 +12,17 @@ class Map implements MapInterface
     use Methods\WriteIn;
     use Methods\DeleteIn;
 
-    public function __construct($data = null)
+    public function __construct(mixed $data = null)
     {
         $this->_data = $data;
     }
 
-    public function get(...$args)
+    public function get(mixed ...$args): mixed
     {
         return $this->getIn($args);
     }
 
-    public function getIn(array $path)
+    public function getIn(array $path): mixed
     {
         if (count($path) === 0) {
             return is_object($this->_data) ? clone($this->_data) : $this->_data;
@@ -37,7 +37,7 @@ class Map implements MapInterface
         }
     }
 
-    public function set(...$args): MapInterface
+    public function set(mixed ...$args): static
     {
         if (count($args) < 1) {
             return $this;
@@ -48,26 +48,21 @@ class Map implements MapInterface
         return $this->setIn($args, $val);
     }
 
-    public function setIn(array $path, $val): MapInterface
+    public function setIn(array $path, mixed $value): static
     {
         $c = $this->getClone();
 
-        $c->_setIn($c->_data, $path, $val);
+        $c->_setIn($c->_data, $path, $value);
 
         return $c;
     }
 
-    /**
-     * @param mixed ...$args
-     *
-     * @return static
-     */
-    public function del(...$args): MapInterface
+    public function del(mixed ...$args): static
     {
         return $this->delIn($args);
     }
 
-    public function delIn(array $path): MapInterface
+    public function delIn(array $path): static
     {
         $c = $this->getClone();
 
@@ -76,7 +71,7 @@ class Map implements MapInterface
         return $c;
     }
 
-    public function has(...$args): bool
+    public function has(mixed ...$args): bool
     {
         return $this->hasIn($args);
     }
@@ -86,12 +81,12 @@ class Map implements MapInterface
         return $this->_hasIn($this->_data, $path);
     }
 
-    public function walk(Closure $callback)
+    public function walk(Closure $callback): void
     {
         $this->_walk($this->_data, $callback);
     }
 
-    protected function _walk($a, Closure $callback)
+    protected function _walk(mixed $a, Closure $callback): void
     {
         static $path = [];
 
@@ -111,7 +106,7 @@ class Map implements MapInterface
         }
     }
 
-    protected function isNonScalarEmpty($v)
+    protected function isNonScalarEmpty(mixed $v): bool
     {
         if (is_array($v)) {
             return count($v) === 0;

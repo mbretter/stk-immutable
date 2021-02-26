@@ -11,7 +11,7 @@ use Stk\Immutable\ImmutableInterface;
  */
 class Merge
 {
-    public function __invoke(ImmutableInterface $a, ImmutableInterface $b)
+    public function __invoke(ImmutableInterface $a, ImmutableInterface $b): ImmutableInterface
     {
         return $a->withMutations(function (ImmutableInterface $n) use ($b) {
             $b->walk(function ($path, $val) use ($n) {
