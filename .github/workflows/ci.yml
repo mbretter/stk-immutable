@@ -51,7 +51,7 @@ jobs:
       run: composer test-reports
 
     - name: Upload to Codecov
-      uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v3
       with:
         files: ./reports/clover.xml
         verbose: true
