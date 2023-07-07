@@ -17,6 +17,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Setup PHP with Xdebug
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        coverage: xdebug
+
     # - name: Validate composer.json and composer.lock
     #  run: composer validate --strict
 
@@ -31,12 +37,6 @@ jobs:
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
-
-    - name: Setup PHP with Xdebug
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2'
-        coverage: xdebug
 
     - name: CS check
       run: composer cs-check
