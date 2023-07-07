@@ -6,7 +6,6 @@ use stdClass;
 
 trait DeleteIn
 {
-
     /*
      * remove element from 3d data structure, return the deleted element
      */

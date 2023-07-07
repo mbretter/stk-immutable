@@ -12,8 +12,9 @@ trait ToArray
             $ovs = get_object_vars($data);
 
             // keep empty stdClasses
-            if (!count($ovs))
+            if (!count($ovs)) {
                 return $data;
+            }
 
             $data = $ovs;
         }
