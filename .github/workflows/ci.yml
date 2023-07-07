@@ -46,3 +46,12 @@ jobs:
 
     - name: Run phpstan
       run: composer analyse
+
+    - name: Coverage
+      run: composer test-reports
+
+    - name: Upload to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        files: ./reports/clover.xml
+        verbose: true
